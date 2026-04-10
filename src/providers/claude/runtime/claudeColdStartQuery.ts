@@ -1,3 +1,5 @@
+import * as path from 'path';
+
 import type { Options } from '@anthropic-ai/claude-agent-sdk';
 import { query as agentQuery } from '@anthropic-ai/claude-agent-sdk';
 
@@ -72,8 +74,15 @@ export async function runColdStartQuery(
 
   const selectedModel = config.model ?? (settings.model as string);
 
+  // Resolve cwd override. Empty => vault root. Relative => joined under vault root.
+  // Absolute => used as-is. Mirrors QueryOptionsBuilder.buildBaseOptions.
+  const cwdOverride = claudeSettings.cwdOverride?.trim();
+  const resolvedCwd = cwdOverride
+    ? (path.isAbsolute(cwdOverride) ? cwdOverride : path.join(vaultPath, cwdOverride))
+    : vaultPath;
+
   const options: Options = {
-    cwd: vaultPath,
+    cwd: resolvedCwd,
     systemPrompt: config.systemPrompt,
     model: selectedModel,
     abortController: config.abortController,

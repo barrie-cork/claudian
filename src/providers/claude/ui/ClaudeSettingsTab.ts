@@ -119,6 +119,25 @@ export const claudeSettingsTabRenderer: ProviderSettingsTabRenderer = {
       updateCliPathValidation(currentValue, text.inputEl);
     });
 
+    new Setting(container)
+      .setName('Working directory override')
+      .setDesc(
+        'Vault-relative or absolute path where Claude Code is launched. '
+        + 'Leave empty to use the vault root. Example: 02_Projects/O1_EGM. '
+        + 'Changing this restarts active Claude sessions so the new folder\'s '
+        + 'CLAUDE.md, .mcp.json, and .claude/ are picked up.'
+      )
+      .addText((text) => {
+        text
+          .setPlaceholder('02_Projects/O1_EGM')
+          .setValue(claudeSettings.cwdOverride)
+          .onChange(async (value) => {
+            updateClaudeProviderSettings(settingsBag, { cwdOverride: value.trim() });
+            await context.plugin.saveSettings();
+          });
+        text.inputEl.style.width = '100%';
+      });
+
     // --- Safety ---
 
     new Setting(container).setName(t('settings.safety')).setHeading();

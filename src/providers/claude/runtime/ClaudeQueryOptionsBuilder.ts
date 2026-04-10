@@ -1,3 +1,5 @@
+import * as path from 'path';
+
 import type {
   CanUseTool,
   Options,
@@ -81,6 +83,7 @@ export class QueryOptionsBuilder {
     // Since allowDangerouslySkipPermissions is always true, both directions work without restart.
 
     if (currentConfig.enableChrome !== newConfig.enableChrome) return true;
+    if (currentConfig.cwdOverride !== newConfig.cwdOverride) return true;
 
     // Effort level requires restart (no setEffort() on persistent query)
     if (currentConfig.effortLevel !== newConfig.effortLevel) return true;
@@ -130,6 +133,7 @@ export class QueryOptionsBuilder {
       settingSources: claudeSettings.loadUserSettings ? 'user,project' : 'project',
       claudeCliPath: ctx.cliPath,
       enableChrome: claudeSettings.enableChrome,
+      cwdOverride: claudeSettings.cwdOverride,
     };
   }
 
@@ -267,8 +271,16 @@ export class QueryOptionsBuilder {
       vaultPath: ctx.vaultPath,
       userName: ctx.settings.userName,
     };
+
+    // Resolve cwd override. Empty => vault root. Relative => joined under vault root.
+    // Absolute => used as-is (may be outside vault; see bash sandbox caveats).
+    const override = claudeSettings.cwdOverride?.trim();
+    const resolvedCwd = override
+      ? (path.isAbsolute(override) ? override : path.join(ctx.vaultPath, override))
+      : ctx.vaultPath;
+
     const options: Options = {
-      cwd: ctx.vaultPath,
+      cwd: resolvedCwd,
       systemPrompt: buildSystemPrompt(systemPromptSettings),
       model,
       abortController,

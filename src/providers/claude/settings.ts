@@ -16,6 +16,7 @@ export interface ClaudeProviderSettings {
   lastModel: string;
   environmentVariables: string;
   environmentHash: string;
+  cwdOverride: string;
 }
 
 export const DEFAULT_CLAUDE_PROVIDER_SETTINGS: Readonly<ClaudeProviderSettings> = Object.freeze({
@@ -30,6 +31,7 @@ export const DEFAULT_CLAUDE_PROVIDER_SETTINGS: Readonly<ClaudeProviderSettings> 
   lastModel: 'haiku',
   environmentVariables: '',
   environmentHash: '',
+  cwdOverride: '',
 });
 
 function normalizeHostnameCliPaths(value: unknown): HostnameCliPaths {
@@ -83,6 +85,8 @@ export function getClaudeProviderSettings(
     environmentHash: (config.environmentHash as string | undefined)
       ?? (settings.lastEnvHash as string | undefined)
       ?? DEFAULT_CLAUDE_PROVIDER_SETTINGS.environmentHash,
+    cwdOverride: (config.cwdOverride as string | undefined)
+      ?? DEFAULT_CLAUDE_PROVIDER_SETTINGS.cwdOverride,
   };
 }
 

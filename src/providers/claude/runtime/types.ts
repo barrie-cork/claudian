@@ -95,6 +95,7 @@ export interface PersistentQueryConfig {
   settingSources: string;
   claudeCliPath: string;
   enableChrome: boolean;
+  cwdOverride: string;
 }
 
 export interface SessionState {

@@ -77,6 +77,7 @@ function createMockPersistentQueryConfig(
     settingSources: 'project',
     claudeCliPath: '/mock/claude',
     enableChrome: false,
+    cwdOverride: '',
     ...overrides,
   };
 }
